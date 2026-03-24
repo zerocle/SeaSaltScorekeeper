@@ -1,0 +1,13 @@
+export { CrabIcon } from "./CrabIcon";
+export { BoatIcon } from "./BoatIcon";
+export { FishIcon } from "./FishIcon";
+export { ShellIcon } from "./ShellIcon";
+export { OctopusIcon } from "./OctopusIcon";
+export { PenguinIcon } from "./PenguinIcon";
+export { SailorIcon } from "./SailorIcon";
+export { MermaidIcon } from "./MermaidIcon";
+export { SharkSwimmerIcon } from "./SharkSwimmerIcon";
+export { TrophyIcon } from "./TrophyIcon";
+export { DiceIcon } from "./DiceIcon";
+export { StopHandIcon } from "./StopHandIcon";
+export { DeckIcon } from "./DeckIcon";

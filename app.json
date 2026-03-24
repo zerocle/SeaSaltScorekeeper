@@ -1,0 +1,50 @@
+{
+    "expo": {
+        "name": "Sea Salt Scorekeeper",
+        "slug": "sea-salt-scorekeeper",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "icon": "./assets/icon.png",
+        "userInterfaceStyle": "light",
+        "scheme": "sea-salt-scorekeeper",
+        "splash": {
+            "image": "./assets/splash-icon.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
+        },
+        "runtimeVersion": {
+            "policy": "appVersion"
+        },
+        "ios": {
+            "supportsTablet": true,
+            "bundleIdentifier": "dev.badpour.seasalt",
+            "buildNumber": "1",
+            "infoPlist": {
+                "ITSAppUsesNonExemptEncryption": false
+            }
+        },
+        "android": {
+            "adaptiveIcon": {
+                "backgroundColor": "#E6F4FE",
+                "foregroundImage": "./assets/android-icon-foreground.png",
+                "backgroundImage": "./assets/android-icon-background.png",
+                "monochromeImage": "./assets/android-icon-monochrome.png"
+            },
+            "package": "dev.badpour.seasalt",
+            "versionCode": 1,
+            "permissions": []
+        },
+        "web": {
+            "favicon": "./assets/favicon.png",
+            "bundler": "metro"
+        },
+        "extra": {
+            "sentryDsn": "",
+            "router": {},
+            "eas": {
+                "projectId": "07ba1141-3db8-4885-8884-6c1f6ca622e5"
+            }
+        },
+        "plugins": ["expo-router"]
+    }
+}

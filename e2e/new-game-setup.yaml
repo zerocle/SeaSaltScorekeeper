@@ -1,0 +1,47 @@
+# Flow: Create a new game with different player counts
+appId: dev.badpour.seasalt
+---
+- launchApp:
+      clearState: true
+
+# Wait for app to fully load
+- extendedWaitUntil:
+      visible: "Sea Salt Scorekeeper"
+      timeout: 15000
+
+# Verify player setup screen
+- assertVisible: "Sea Salt Scorekeeper"
+- assertVisible: "Number of Players"
+
+# Default is 2 players — verify 2 name inputs
+- assertVisible: "Player 1 name"
+- assertVisible: "Player 2 name"
+
+# Start button should be disabled with empty names
+- assertVisible: "Start Game"
+
+# Switch to 3 players
+- tapOn: "3 players"
+- assertVisible: "Player 3 name"
+
+# Switch to 4 players
+- tapOn: "4 players"
+- assertVisible: "Player 4 name"
+
+# Switch back to 2 players
+- tapOn: "2 players"
+- assertNotVisible: "Player 3 name"
+
+# Enter player names
+- tapOn: "Player 1 name"
+- inputText: "Alice"
+- tapOn: "Player 2 name"
+- inputText: "Bob"
+
+# Start the game
+- tapOn: "Start Game"
+
+# Verify we're on the scoreboard
+- assertVisible: "Scoreboard"
+- assertVisible: "Add Round"
+- assertVisible: "New Game"

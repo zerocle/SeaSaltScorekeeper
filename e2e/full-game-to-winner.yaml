@@ -1,0 +1,100 @@
+# Flow: Play a complete 2-player game until someone wins
+# Strategy: Give Alice high scores each round to cross the 40-point threshold
+# All card totals stay within deck limits
+appId: dev.badpour.seasalt
+---
+- launchApp:
+      clearState: true
+
+- extendedWaitUntil:
+      visible: "Player 1 name"
+      timeout: 15000
+
+# Set up game
+- tapOn: "Player 1 name"
+- inputText: "Alice"
+- tapOn: "Player 2 name"
+- inputText: "Bob"
+- tapOn: "Start Game"
+
+# --- Round 1: Alice 7 crabs (7pts) ---
+- tapOn: "Add Round"
+- assertVisible: "Round 1"
+- tapOn: "Stop"
+
+- tapOn: "Enter Crabs for all players"
+- tapOn: "Select 7"
+- tapOn: "Select 1"
+- tapOn: "Done"
+
+- scrollUntilVisible:
+      element: "Submit Round"
+      direction: DOWN
+- tapOn: "Submit Round"
+- assertVisible: "Scoreboard"
+
+# --- Round 2: Alice 6 boats (6pts), running ~13 ---
+- tapOn: "Add Round"
+- assertVisible: "Round 2"
+- tapOn: "Stop"
+
+- tapOn: "Enter Boats for all players"
+- tapOn: "Select 6"
+- tapOn: "Select 1"
+- tapOn: "Done"
+
+- scrollUntilVisible:
+      element: "Submit Round"
+      direction: DOWN
+- tapOn: "Submit Round"
+- assertVisible: "Scoreboard"
+
+# --- Round 3: Alice 5 fish + 5 swim+shark (10pts), running ~23 ---
+- tapOn: "Add Round"
+- assertVisible: "Round 3"
+- tapOn: "Stop"
+
+- tapOn: "Enter Fish for all players"
+- tapOn: "Select 5"
+- tapOn: "Done"
+
+- tapOn: "Enter Swim+Shark for all players"
+- tapOn: "Select 5"
+- tapOn: "Done"
+
+- scrollUntilVisible:
+      element: "Submit Round"
+      direction: DOWN
+- tapOn: "Submit Round"
+- assertVisible: "Scoreboard"
+
+# --- Round 4: Alice 6 shells (10pts) + 5 octopus (12pts), running ~45 ---
+- tapOn: "Add Round"
+- assertVisible: "Round 4"
+- tapOn: "Stop"
+
+- scrollUntilVisible:
+      element: "Enter Shells for all players"
+      direction: DOWN
+- tapOn: "Enter Shells for all players"
+- tapOn: "Select 6"
+- tapOn: "Done"
+
+- scrollUntilVisible:
+      element: "Enter Octopus for all players"
+      direction: DOWN
+- tapOn: "Enter Octopus for all players"
+- tapOn: "Select 5"
+- tapOn: "Done"
+
+- scrollUntilVisible:
+      element: "Submit Round"
+      direction: DOWN
+- tapOn: "Submit Round"
+
+# Should be on game-over screen now
+- assertVisible: "Winner"
+- assertVisible: "Alice"
+- assertVisible: "Final Scores"
+- assertVisible: "View Scoreboard"
+- assertVisible: "New Game"

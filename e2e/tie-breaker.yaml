@@ -1,0 +1,101 @@
+# Flow: Force a tie at 40pts, auto-resolved by last-round score.
+# R1: Alice=21, Bob=19. R2: Alice=19, Bob=21. Both total=40.
+# Bob scored more in R2 (21 vs 19), so Bob wins the tie-break.
+appId: dev.badpour.seasalt
+---
+- launchApp:
+      clearState: true
+
+- extendedWaitUntil:
+      visible: "Player 1 name"
+      timeout: 15000
+
+- tapOn: "Player 1 name"
+- inputText: "Alice"
+- tapOn: "Player 2 name"
+- inputText: "Bob"
+- tapOn: "Start Game"
+
+# --- Round 1: Alice=21pts, Bob=19pts ---
+# A: 9crabs+7boats+5swim = 21. B: 7fish+5swim+4shells(6pts) = 18... need 19
+# B: 1boat+7fish+5swim+4shells(6pts) = 1+7+5+6 = 19. Yes.
+- tapOn: "Add Round"
+- tapOn: "Stop"
+
+- tapOn: "Enter Crabs for all players"
+- tapOn: "Select 9"
+- tapOn: "Select 0"
+- tapOn: "Done"
+
+- tapOn: "Enter Boats for all players"
+- tapOn: "Select 7"
+- tapOn: "Select 1"
+- tapOn: "Done"
+
+- tapOn: "Enter Fish for all players"
+- tapOn: "Select 0"
+- tapOn: "Select 7"
+- tapOn: "Done"
+
+- tapOn: "Enter Swim+Shark for all players"
+- tapOn: "Select 5"
+- tapOn: "Select 5"
+- tapOn: "Done"
+
+- scrollUntilVisible:
+      element: "Enter Shells for all players"
+      direction: DOWN
+- tapOn: "Enter Shells for all players"
+- tapOn: "Select 0"
+- tapOn: "Select 4"
+- tapOn: "Done"
+
+- scrollUntilVisible:
+      element: "Submit Round"
+      direction: DOWN
+- tapOn: "Submit Round"
+- assertVisible: "Scoreboard"
+
+# --- Round 2: Alice=19pts, Bob=21pts. Totals: Alice=40, Bob=40 ---
+# Swap the strategy: A: 1boat+7fish+5swim+4shells(6pts) = 19
+# B: 9crabs+7boats+5swim = 21
+- tapOn: "Add Round"
+- tapOn: "Stop"
+
+- tapOn: "Enter Crabs for all players"
+- tapOn: "Select 0"
+- tapOn: "Select 9"
+- tapOn: "Done"
+
+- tapOn: "Enter Boats for all players"
+- tapOn: "Select 1"
+- tapOn: "Select 7"
+- tapOn: "Done"
+
+- tapOn: "Enter Fish for all players"
+- tapOn: "Select 7"
+- tapOn: "Select 0"
+- tapOn: "Done"
+
+- tapOn: "Enter Swim+Shark for all players"
+- tapOn: "Select 5"
+- tapOn: "Select 5"
+- tapOn: "Done"
+
+- scrollUntilVisible:
+      element: "Enter Shells for all players"
+      direction: DOWN
+- tapOn: "Enter Shells for all players"
+- tapOn: "Select 4"
+- tapOn: "Select 0"
+- tapOn: "Done"
+
+- scrollUntilVisible:
+      element: "Submit Round"
+      direction: DOWN
+- tapOn: "Submit Round"
+
+# Bob scored 21 in R2 vs Alice's 19. Bob wins the tie automatically.
+- assertVisible: "Winner"
+- assertVisible: "Bob"
+- assertVisible: "Final Scores"

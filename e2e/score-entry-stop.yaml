@@ -1,0 +1,54 @@
+# Flow: Enter a round with Stop end type and verify scores appear on scoreboard
+appId: dev.badpour.seasalt
+---
+- launchApp:
+      clearState: true
+
+- extendedWaitUntil:
+      visible: "Player 1 name"
+      timeout: 15000
+
+# Set up a 2-player game
+- tapOn: "Player 1 name"
+- inputText: "Alice"
+- tapOn: "Player 2 name"
+- inputText: "Bob"
+- tapOn: "Start Game"
+
+# Navigate to score entry
+- tapOn: "Add Round"
+- assertVisible: "Round 1"
+
+# Select Stop round end type
+- tapOn: "Stop"
+- assertVisible: "Card Breakdowns"
+
+# Enter crabs: Alice=3, Bob=1
+- tapOn: "Enter Crabs for all players"
+- tapOn: "Select 3"
+- tapOn: "Select 1"
+- tapOn: "Done"
+
+# Enter boats: Alice=2, Bob=0
+- tapOn: "Enter Boats for all players"
+- tapOn: "Select 2"
+- tapOn: "Done"
+
+# Enter shells: Alice=0, Bob=4
+- scrollUntilVisible:
+      element: "Enter Shells for all players"
+      direction: DOWN
+- tapOn: "Enter Shells for all players"
+- tapOn: "Select 0"
+- tapOn: "Select 4"
+- tapOn: "Done"
+
+# Submit the round
+- scrollUntilVisible:
+      element: "Submit Round"
+      direction: DOWN
+- tapOn: "Submit Round"
+
+# Verify we're back on scoreboard with scores
+- assertVisible: "Scoreboard"
+- assertVisible: "Total"

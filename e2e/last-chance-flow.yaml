@@ -1,0 +1,69 @@
+# Flow: Enter a Last Chance round with caller selection and outcome
+appId: dev.badpour.seasalt
+---
+- launchApp:
+      clearState: true
+
+- extendedWaitUntil:
+      visible: "Player 1 name"
+      timeout: 15000
+
+# Set up game
+- tapOn: "Player 1 name"
+- inputText: "Alice"
+- tapOn: "Player 2 name"
+- inputText: "Bob"
+- tapOn: "Start Game"
+
+# Go to score entry
+- tapOn: "Add Round"
+- assertVisible: "Round 1"
+
+# Select Last Chance round end type
+- tapOn: "Last Chance"
+
+# Step 1: Select caller
+- assertVisible: "Who called Last Chance?"
+- tapOn: "Select Alice as caller"
+
+# Step 2: Enter card breakdowns
+- assertVisible: "Card Breakdowns"
+
+# Alice: 5 crabs, Bob: 2 crabs
+- tapOn: "Enter Crabs for all players"
+- tapOn: "Select 5"
+- tapOn: "Select 2"
+- tapOn: "Done"
+
+# Determine outcome
+- scrollUntilVisible:
+      element: "Determine Outcome"
+      direction: DOWN
+- tapOn: "Determine Outcome"
+
+# Step 3: Show outcome — Alice should win (5 >= 2)
+- assertVisible: "Caller Won!"
+
+# Proceed to color bonuses
+- tapOn: "Enter Color Bonuses"
+
+# Step 4: Enter color bonuses
+- assertVisible: "Color Bonuses"
+
+# Enter color bonus for Alice
+- tapOn: "Color bonus for Alice"
+- tapOn: "Select 3"
+
+# Enter color bonus for Bob
+- tapOn: "Color bonus for Bob"
+- tapOn: "Select 1"
+
+# Submit the round
+- scrollUntilVisible:
+      element: "Submit Round"
+      direction: DOWN
+- tapOn: "Submit Round"
+
+# Should be back on scoreboard
+- assertVisible: "Scoreboard"
+- assertVisible: "Total"

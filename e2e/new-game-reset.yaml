@@ -1,0 +1,63 @@
+# Flow: Verify New Game clears state and returns to player setup
+appId: dev.badpour.seasalt
+---
+- launchApp:
+      clearState: true
+
+- extendedWaitUntil:
+      visible: "Player 1 name"
+      timeout: 15000
+
+# Set up and start a game
+- tapOn: "Player 1 name"
+- inputText: "Alice"
+- tapOn: "Player 2 name"
+- inputText: "Bob"
+- tapOn: "Start Game"
+- assertVisible: "Scoreboard"
+
+# Add a round so there's some state
+- tapOn: "Add Round"
+- tapOn: "Stop"
+
+# Enter crabs: Alice=3, Bob=0
+- tapOn: "Enter Crabs for all players"
+- tapOn: "Select 3"
+- tapOn: "Done"
+
+- scrollUntilVisible:
+      element: "Submit Round"
+      direction: DOWN
+- tapOn: "Submit Round"
+- assertVisible: "Scoreboard"
+
+# Tap New Game
+- tapOn: "New Game"
+
+# Should be back on player setup screen
+- assertVisible: "Game Not Finished"
+- assertVisible: "Start New Game"
+- assertVisible: "Cancel"
+
+# Tap New Game
+- tapOn: "Start New Game"
+
+- assertVisible: "Number of Players"
+
+# Start a fresh game to verify state was cleared
+- tapOn: "Player 1 name"
+- eraseText
+- inputText: "Charlie"
+- tapOn: "Player 2 name"
+- eraseText
+- inputText: "Dana"
+- tapOn: "Start Game"
+
+# Verify fresh scoreboard with new names, no old rounds
+- assertVisible: "Scoreboard"
+- tapOn: "Add Round"
+- tapOn: "Stop"
+- assertNotVisible: "Alice"
+- assertVisible: "Charlie"
+- assertVisible: "Dana"
+- assertNotVisible: "Total"

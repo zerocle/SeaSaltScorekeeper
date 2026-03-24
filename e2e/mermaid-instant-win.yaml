@@ -1,0 +1,34 @@
+# Flow: Trigger a mermaid instant win via the wizard flow
+appId: dev.badpour.seasalt
+---
+- launchApp:
+      clearState: true
+
+- extendedWaitUntil:
+      visible: "Player 1 name"
+      timeout: 15000
+
+# Set up game
+- tapOn: "Player 1 name"
+- inputText: "Alice"
+- tapOn: "Player 2 name"
+- inputText: "Bob"
+- tapOn: "Start Game"
+
+# Go to score entry
+- tapOn: "Add Round"
+- assertVisible: "Round 1"
+
+# Select Mermaid Win round end type
+- tapOn: "Mermaid Win"
+
+# Should ask who collected 4 mermaids
+- assertVisible: "Who collected 4 mermaids?"
+
+# Select Alice
+- tapOn: "Alice wins by mermaids"
+
+# Should navigate to game-over screen with mermaid win
+- assertVisible: "Winner"
+- assertVisible: "Alice"
+- assertVisible: "Mermaid Win!"
