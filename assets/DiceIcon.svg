@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 19 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;">
+    <g id="Artboard1" transform="matrix(0.925051,0,0,0.932584,-1.50665,-0.803558)">
+        <rect x="1.629" y="0.862" width="20.469" height="22.445" style="fill:none;"/>
+        <clipPath id="_clip1">
+            <rect x="1.629" y="0.862" width="20.469" height="22.445"/>
+        </clipPath>
+        <g clip-path="url(#_clip1)">
+            <g transform="matrix(1.08102,0,0,1.07229,-1.11075,-0.760872)">
+                <path d="M12,2L21,7L12,12L3,7L12,2Z" style="fill:rgb(245,192,96);fill-rule:nonzero;"/>
+            </g>
+            <g transform="matrix(1.08102,0,0,1.07229,-1.11075,-0.760872)">
+                <path d="M3,7L12,12L12,22L3,17L3,7Z" style="fill:rgb(208,138,16);fill-rule:nonzero;"/>
+            </g>
+            <g transform="matrix(1.08102,0,0,1.07229,-1.11075,-0.760872)">
+                <path d="M21,7L21,17L12,22L12,12L21,7Z" style="fill:rgb(160,104,0);fill-rule:nonzero;"/>
+            </g>
+            <g transform="matrix(1.08102,0,0,1.07229,-1.11075,-0.760872)">
+                <path d="M12,2L21,7L21,17L12,22L3,17L3,7L12,2ZM12,12L12,22M12,12L21,7M12,12L3,7" style="fill:none;fill-rule:nonzero;stroke:rgb(90,58,0);stroke-width:0.6px;"/>
+            </g>
+            <g transform="matrix(1.08102,0,0,1.07229,-1.11075,-0.760872)">
+                <circle cx="12" cy="7" r="1.1" style="fill:rgb(74,48,0);"/>
+            </g>
+            <g transform="matrix(1.08102,0,0,1.07229,-1.11075,-0.760872)">
+                <circle cx="6" cy="13" r="1" style="fill:rgb(74,48,0);"/>
+            </g>
+            <g transform="matrix(1.08102,0,0,1.07229,-1.11075,-0.760872)">
+                <circle cx="9" cy="18" r="1" style="fill:rgb(74,48,0);"/>
+            </g>
+            <g transform="matrix(1.08102,0,0,1.07229,-1.11075,-0.760872)">
+                <circle cx="15" cy="13" r="1" style="fill:rgb(74,48,0);"/>
+            </g>
+            <g transform="matrix(1.08102,0,0,1.07229,-1.11075,-0.760872)">
+                <circle cx="18" cy="15" r="1" style="fill:rgb(74,48,0);"/>
+            </g>
+            <g transform="matrix(1.08102,0,0,1.07229,-1.11075,-0.760872)">
+                <circle cx="15" cy="18" r="1" style="fill:rgb(74,48,0);"/>
+            </g>
+        </g>
+    </g>
+</svg>

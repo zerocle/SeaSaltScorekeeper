@@ -180,6 +180,17 @@ export function CompactScoreTable({
     const [activeModal, setActiveModal] = useState<RowKey | string | null>(
         null,
     );
+    const [tappedPlayerIndex, setTappedPlayerIndex] = useState<
+        number | undefined
+    >(undefined);
+
+    const openModalForPlayer = (
+        modalKey: RowKey | string,
+        playerIndex?: number,
+    ) => {
+        setTappedPlayerIndex(playerIndex);
+        setActiveModal(modalKey);
+    };
 
     const applyRowValues = (
         key: RowKey,
@@ -291,16 +302,18 @@ export function CompactScoreTable({
 
         return (
             <View key={config.key}>
-                <TouchableOpacity
+                <View
                     style={[
                         styles.row,
                         isOverAllocated && styles.rowOverAllocated,
                     ]}
-                    onPress={() => setActiveModal(config.key)}
-                    accessibilityLabel={`Enter ${config.label} for all players`}
-                    accessibilityRole="button"
                 >
-                    <View style={styles.rowLeft}>
+                    <TouchableOpacity
+                        style={styles.rowLeft}
+                        onPress={() => openModalForPlayer(config.key)}
+                        accessibilityLabel={`Enter ${config.label} for all players`}
+                        accessibilityRole="button"
+                    >
                         <Text
                             style={[
                                 styles.rowLabel,
@@ -314,14 +327,22 @@ export function CompactScoreTable({
                                 ({total}/{config.maxValue})
                             </Text>
                         )}
-                    </View>
+                    </TouchableOpacity>
                     <View style={styles.rowRight}>
                         {rowScores.map((score, i) => {
                             const cardCount = values[i];
                             const hasCardsButZero =
                                 score === 0 && cardCount > 0;
                             return (
-                                <View key={i} style={styles.valuePill}>
+                                <TouchableOpacity
+                                    key={i}
+                                    style={styles.valuePill}
+                                    onPress={() =>
+                                        openModalForPlayer(config.key, i)
+                                    }
+                                    accessibilityLabel={`Enter ${config.label} for ${players[i]?.name}`}
+                                    accessibilityRole="button"
+                                >
                                     <Text
                                         style={[
                                             styles.valuePillNumber,
@@ -343,11 +364,11 @@ export function CompactScoreTable({
                                                 {config.multiplier.label}
                                             </Text>
                                         )}
-                                </View>
+                                </TouchableOpacity>
                             );
                         })}
                     </View>
-                </TouchableOpacity>
+                </View>
 
                 {/* Modal for this row */}
                 <RowEntryModal
@@ -357,6 +378,7 @@ export function CompactScoreTable({
                     currentValues={values}
                     maxValue={config.maxValue}
                     deckMax={config.hasDeckLimit ? config.maxValue : undefined}
+                    initialPlayerIndex={tappedPlayerIndex}
                     multiplier={
                         config.multiplier
                             ? {
@@ -401,23 +423,23 @@ export function CompactScoreTable({
             </View>
 
             {/* Category: Duo Cards */}
-            <View style={styles.categoryHeader}>
-                <CrabIcon size={16} color={colors.textPrimary} />
-                <Text style={styles.categoryText}> Duo Cards</Text>
+            <View style={[styles.categoryHeader, styles.categoryDuo]}>
+                <CrabIcon size={36} />
+                <Text style={styles.categoryText}>Duo Cards</Text>
             </View>
             {DUO_ROWS.map(renderCardRow)}
 
             {/* Category: Collector Cards */}
-            <View style={styles.categoryHeader}>
-                <ShellIcon size={16} color={colors.textPrimary} />
-                <Text style={styles.categoryText}> Collector Cards</Text>
+            <View style={[styles.categoryHeader, styles.categoryCollector]}>
+                <ShellIcon size={36} />
+                <Text style={styles.categoryText}>Collector Cards</Text>
             </View>
             {COLLECTOR_ROWS.map(renderCardRow)}
 
             {/* Category: Mermaids */}
-            <View style={styles.categoryHeader}>
-                <MermaidIcon size={16} color={colors.textPrimary} />
-                <Text style={styles.categoryText}> Mermaids</Text>
+            <View style={[styles.categoryHeader, styles.categoryMermaid]}>
+                <MermaidIcon size={36} />
+                <Text style={styles.categoryText}>Mermaids</Text>
             </View>
             {renderCardRow({
                 key: "mermaidCount",
@@ -440,17 +462,17 @@ export function CompactScoreTable({
 
                 return (
                     <View key={modalKey}>
-                        <TouchableOpacity
-                            style={styles.row}
-                            onPress={() => setActiveModal(modalKey)}
-                            accessibilityLabel={`Enter Mermaid ${mIdx + 1} color count for all players`}
-                            accessibilityRole="button"
-                        >
-                            <View style={styles.rowLeft}>
+                        <View style={styles.row}>
+                            <TouchableOpacity
+                                style={styles.rowLeft}
+                                onPress={() => openModalForPlayer(modalKey)}
+                                accessibilityLabel={`Enter Mermaid ${mIdx + 1} color count for all players`}
+                                accessibilityRole="button"
+                            >
                                 <Text style={styles.rowLabel}>
                                     M{mIdx + 1} Color
                                 </Text>
-                            </View>
+                            </TouchableOpacity>
                             <View style={styles.rowRight}>
                                 {players.map((_, pIdx) => {
                                     const hasMermaid =
@@ -459,9 +481,17 @@ export function CompactScoreTable({
                                             0);
                                     const v = hasMermaid ? values[pIdx] : 0;
                                     return (
-                                        <View
+                                        <TouchableOpacity
                                             key={pIdx}
                                             style={styles.valuePill}
+                                            onPress={() =>
+                                                openModalForPlayer(
+                                                    modalKey,
+                                                    pIdx,
+                                                )
+                                            }
+                                            accessibilityLabel={`Enter Mermaid ${mIdx + 1} color count for ${players[pIdx]?.name}`}
+                                            accessibilityRole="button"
                                         >
                                             <Text
                                                 style={[
@@ -475,17 +505,18 @@ export function CompactScoreTable({
                                             >
                                                 {hasMermaid ? v : "—"}
                                             </Text>
-                                        </View>
+                                        </TouchableOpacity>
                                     );
                                 })}
                             </View>
-                        </TouchableOpacity>
+                        </View>
                         <RowEntryModal
                             visible={activeModal === modalKey}
                             title={`Mermaid ${mIdx + 1} Color Count`}
                             players={players}
                             currentValues={values}
                             maxValue={DECK_MAX.mermaidColorCount}
+                            initialPlayerIndex={tappedPlayerIndex}
                             disabledPlayers={players.map(
                                 (_, pIdx) =>
                                     mIdx >=
@@ -575,15 +606,28 @@ const styles = StyleSheet.create({
     categoryHeader: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: colors.surfaceAlt,
-        paddingVertical: 5,
-        paddingHorizontal: 8,
-        marginTop: 4,
+        height: 48,
+        paddingHorizontal: 10,
+        marginTop: 8,
         marginBottom: 2,
-        borderRadius: 4,
+        borderRadius: 8,
+        borderLeftWidth: 4,
+        gap: 10,
+    },
+    categoryDuo: {
+        backgroundColor: "rgba(232, 87, 26, 0.10)",
+        borderLeftColor: "#E8571A",
+    },
+    categoryCollector: {
+        backgroundColor: "rgba(66, 125, 183, 0.12)",
+        borderLeftColor: "#427BB7",
+    },
+    categoryMermaid: {
+        backgroundColor: "rgba(42, 157, 143, 0.10)",
+        borderLeftColor: "#2A9D8F",
     },
     categoryText: {
-        fontSize: 13,
+        fontSize: 14,
         fontWeight: "700",
         color: colors.textPrimary,
     },
