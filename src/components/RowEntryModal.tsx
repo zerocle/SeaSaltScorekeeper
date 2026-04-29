@@ -28,6 +28,8 @@ interface RowEntryModalProps {
     multiplier?: MultiplierConfig;
     /** Player indices that should be disabled (grayed out, skipped in auto-advance) */
     disabledPlayers?: boolean[];
+    /** Start on this player's tab when the modal opens */
+    initialPlayerIndex?: number;
     onConfirm: (values: number[], multiplierPlayerIndex?: number) => void;
     onClose: () => void;
 }
@@ -41,6 +43,7 @@ export function RowEntryModal({
     deckMax,
     multiplier,
     disabledPlayers,
+    initialPlayerIndex,
     onConfirm,
     onClose,
 }: RowEntryModalProps) {
@@ -68,7 +71,14 @@ export function RowEntryModal({
     useEffect(() => {
         if (visible) {
             setValues([...currentValues]);
-            setActivePlayerIdx(findFirstEnabledPlayer());
+            const startIdx =
+                initialPlayerIndex !== undefined &&
+                initialPlayerIndex >= 0 &&
+                initialPlayerIndex < players.length &&
+                !isPlayerDisabled(initialPlayerIndex)
+                    ? initialPlayerIndex
+                    : findFirstEnabledPlayer();
+            setActivePlayerIdx(startIdx);
             setMultiplierHolder(multiplier?.activePlayerIndex ?? -1);
         }
     }, [visible]);
