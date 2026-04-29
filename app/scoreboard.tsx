@@ -179,7 +179,7 @@ export default function ScoreboardScreen() {
                     >
                         <View style={styles.roundLabelCell}>
                             <IconComponent
-                                size={14}
+                                size={36}
                                 color={colors.textSecondary}
                             />
                         </View>
