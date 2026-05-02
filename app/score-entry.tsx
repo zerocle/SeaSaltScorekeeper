@@ -16,6 +16,7 @@ import {
     validateCardBreakdown,
     validateCrossPlayerTotals,
     determineLastChanceOutcome,
+    calculateLastChanceRoundScores,
 } from "../src/scoringEngine";
 import { DECK_MAX } from "../src/deckLimits";
 import { createEmptyBreakdown } from "../src/utils";
@@ -275,20 +276,11 @@ export default function ScoreEntryScreen() {
             }),
         );
 
-        const scores: PlayerRoundScore[] = session.players.map((_, i) => {
-            const cardScore = effectiveScores[i] ?? 0;
-            const colorBonus = colorBonuses[i] ?? 0;
-            const isCaller = i === ci;
-            const score =
-                outcome === "won"
-                    ? isCaller
-                        ? cardScore + colorBonus
-                        : colorBonus
-                    : isCaller
-                      ? colorBonus
-                      : cardScore;
-            return { playerIndex: i, score };
-        });
+        const scores = calculateLastChanceRoundScores(
+            effectiveScores,
+            ci,
+            colorBonuses,
+        );
 
         const lastChanceData: LastChanceRoundData = {
             callerIndex: ci,

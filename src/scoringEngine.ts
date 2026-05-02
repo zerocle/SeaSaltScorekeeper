@@ -99,44 +99,32 @@ export function determineLastChanceOutcome(
 }
 
 export function calculateLastChanceRoundScores(
-    playerBreakdowns: PlayerCardBreakdown[],
+    cardScores: number[],
     callerIndex: number,
     colorBonuses: number[],
 ): PlayerRoundScore[] {
-    const callerBreakdown = playerBreakdowns.find(
-        (pb) => pb.playerIndex === callerIndex,
-    );
-    if (!callerBreakdown) {
-        throw new Error(`No breakdown found for caller index ${callerIndex}`);
+    const callerCardScore = cardScores[callerIndex];
+    if (callerCardScore === undefined) {
+        throw new Error(`No score found for caller index ${callerIndex}`);
     }
 
-    const callerCardScore = calculateCardScore(callerBreakdown.breakdown);
-
-    const opponentCardScores = playerBreakdowns
-        .filter((pb) => pb.playerIndex !== callerIndex)
-        .map((pb) => calculateCardScore(pb.breakdown));
+    const opponentCardScores = cardScores.filter((_, i) => i !== callerIndex);
 
     const outcome = determineLastChanceOutcome(
         callerCardScore,
         opponentCardScores,
     );
 
-    return playerBreakdowns.map((pb) => {
-        const isCaller = pb.playerIndex === callerIndex;
-        const cardScore = calculateCardScore(pb.breakdown);
-        const colorBonus = colorBonuses[pb.playerIndex] ?? 0;
+    return cardScores.map((cardScore, playerIndex) => {
+        const isCaller = playerIndex === callerIndex;
+        const colorBonus = colorBonuses[playerIndex] ?? 0;
 
-        let score: number;
-        if (outcome === "won") {
-            score = isCaller ? cardScore + colorBonus : colorBonus;
-        } else {
-            score = isCaller ? colorBonus : cardScore;
-        }
+        const score =
+            outcome === "won"
+                ? isCaller ? cardScore + colorBonus : colorBonus
+                : isCaller ? colorBonus : cardScore;
 
-        return {
-            playerIndex: pb.playerIndex,
-            score,
-        };
+        return { playerIndex, score };
     });
 }
 

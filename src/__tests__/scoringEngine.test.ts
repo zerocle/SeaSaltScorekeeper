@@ -320,17 +320,8 @@ describe("determineLastChanceOutcome", () => {
 // --- calculateLastChanceRoundScores ---
 
 describe("calculateLastChanceRoundScores", () => {
-    const makeBreakdown = (duoCrabs: number): CardBreakdown => ({
-        ...createEmptyBreakdown(),
-        duoCards: { crabs: duoCrabs, boats: 0, fish: 0, swimmerSharkCombos: 0 },
-    });
-
     it("caller won: caller gets cardScore + colorBonus, opponents get only colorBonus", () => {
-        const breakdowns: PlayerCardBreakdown[] = [
-            { playerIndex: 0, breakdown: makeBreakdown(5) }, // score=5
-            { playerIndex: 1, breakdown: makeBreakdown(3) }, // score=3
-        ];
-        const scores = calculateLastChanceRoundScores(breakdowns, 0, [2, 1]);
+        const scores = calculateLastChanceRoundScores([5, 3], 0, [2, 1]);
         // caller(0) won (5>=3): score = 5+2=7
         // opponent(1): score = 1 (only color bonus)
         expect(scores).toEqual([
@@ -340,11 +331,7 @@ describe("calculateLastChanceRoundScores", () => {
     });
 
     it("caller lost: caller gets only colorBonus, opponents keep cardScore", () => {
-        const breakdowns: PlayerCardBreakdown[] = [
-            { playerIndex: 0, breakdown: makeBreakdown(2) }, // score=2
-            { playerIndex: 1, breakdown: makeBreakdown(5) }, // score=5
-        ];
-        const scores = calculateLastChanceRoundScores(breakdowns, 0, [3, 0]);
+        const scores = calculateLastChanceRoundScores([2, 5], 0, [3, 0]);
         // caller(0) lost (2<5): score = 3 (only color bonus)
         // opponent(1): score = 5 (card score, no color bonus since it's 0)
         expect(scores).toEqual([
@@ -354,21 +341,13 @@ describe("calculateLastChanceRoundScores", () => {
     });
 
     it("throws when caller index not found", () => {
-        const breakdowns: PlayerCardBreakdown[] = [
-            { playerIndex: 0, breakdown: makeBreakdown(5) },
-        ];
         expect(() =>
-            calculateLastChanceRoundScores(breakdowns, 99, [0]),
+            calculateLastChanceRoundScores([5], 99, [0]),
         ).toThrow();
     });
 
     it("handles 3 players correctly", () => {
-        const breakdowns: PlayerCardBreakdown[] = [
-            { playerIndex: 0, breakdown: makeBreakdown(10) },
-            { playerIndex: 1, breakdown: makeBreakdown(8) },
-            { playerIndex: 2, breakdown: makeBreakdown(6) },
-        ];
-        const scores = calculateLastChanceRoundScores(breakdowns, 0, [1, 2, 3]);
+        const scores = calculateLastChanceRoundScores([10, 8, 6], 0, [1, 2, 3]);
         // caller(0) won (10>=8, 10>=6): score = 10+1=11
         // opponent(1): colorBonus only = 2
         // opponent(2): colorBonus only = 3
