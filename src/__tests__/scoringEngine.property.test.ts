@@ -15,7 +15,6 @@ import {
     CollectorCards,
     MultiplierCards,
     MermaidEntry,
-    PlayerCardBreakdown,
 } from "../types";
 
 const FC_SETTINGS = { numRuns: 100 };
@@ -205,14 +204,9 @@ describe("Property: Last Chance round scores are non-negative", () => {
                         })),
                 ),
                 ({ bds, caller, bonuses }) => {
-                    const playerBreakdowns: PlayerCardBreakdown[] = bds.map(
-                        (bd, i) => ({
-                            playerIndex: i,
-                            breakdown: bd,
-                        }),
-                    );
+                    const cardScores = bds.map((bd) => calculateCardScore(bd));
                     const scores = calculateLastChanceRoundScores(
-                        playerBreakdowns,
+                        cardScores,
                         caller,
                         bonuses,
                     );
