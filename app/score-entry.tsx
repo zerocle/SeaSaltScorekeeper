@@ -16,7 +16,6 @@ import {
     validateCardBreakdown,
     validateCrossPlayerTotals,
     determineLastChanceOutcome,
-    calculateLastChanceRoundScores,
 } from "../src/scoringEngine";
 import { DECK_MAX } from "../src/deckLimits";
 import { createEmptyBreakdown } from "../src/utils";
@@ -65,6 +64,7 @@ export default function ScoreEntryScreen() {
     // Persisted state (survives wizard back-navigation)
     const [breakdowns, setBreakdowns] = useState<CardBreakdown[]>([]);
     const [colorBonuses, setColorBonuses] = useState<number[]>([]);
+    const [manualScores, setManualScores] = useState<(number | null)[]>([]);
     const [validationErrors, setValidationErrors] = useState<string[][]>([]);
     const [crossPlayerErrors, setCrossPlayerErrors] = useState<string[]>([]);
     const [submitAttempted, setSubmitAttempted] = useState(false);
@@ -110,8 +110,8 @@ export default function ScoreEntryScreen() {
         setSubmitAttempted(true);
 
         const ci = wizardState.callerIndex;
-        const callerCardScore = cardScores[ci] ?? 0;
-        const opponentCardScores = cardScores.filter((_, i) => i !== ci);
+        const callerCardScore = effectiveScores[ci] ?? 0;
+        const opponentCardScores = effectiveScores.filter((_, i) => i !== ci);
         const outcome = determineLastChanceOutcome(
             callerCardScore,
             opponentCardScores,
@@ -148,6 +148,9 @@ export default function ScoreEntryScreen() {
         setColorBonuses(
             Array.from({ length: session.players.length }, () => 0),
         );
+        setManualScores(
+            Array.from({ length: session.players.length }, () => null),
+        );
     }, [session]);
 
     const cardScores = useMemo(() => {
@@ -160,19 +163,40 @@ export default function ScoreEntryScreen() {
         });
     }, [breakdowns]);
 
+    const effectiveScores = useMemo(
+        () => cardScores.map((s, i) => manualScores[i] ?? s),
+        [cardScores, manualScores],
+    );
+
+    const handleManualScoreChange = (
+        playerIndex: number,
+        value: number | null,
+    ) => {
+        setManualScores((prev) => {
+            const next = [...prev];
+            next[playerIndex] = value;
+            return next;
+        });
+    };
+
     const validateAll = useCallback((): boolean => {
-        const newErrors: string[][] = breakdowns.map((bd) => {
+        const newErrors: string[][] = breakdowns.map((bd, i) => {
+            if (manualScores[i] !== null) return [];
             const result = validateCardBreakdown(bd);
             return result.errors;
         });
         setValidationErrors(newErrors);
-        const crossErrors = validateCrossPlayerTotals(breakdowns);
+        // For cross-player deck limits, treat manually-overridden players as having empty breakdowns
+        const breakdownsForCross = breakdowns.map((bd, i) =>
+            manualScores[i] !== null ? createEmptyBreakdown() : bd,
+        );
+        const crossErrors = validateCrossPlayerTotals(breakdownsForCross);
         setCrossPlayerErrors(crossErrors);
         return (
             newErrors.every((errs) => errs.length === 0) &&
             crossErrors.length === 0
         );
-    }, [breakdowns]);
+    }, [breakdowns, manualScores]);
 
     // Mermaid instant win is now handled via the wizard flow, not inline
     const handleMermaidInstantWin = (_playerIndex: number) => {
@@ -219,7 +243,7 @@ export default function ScoreEntryScreen() {
             }),
         );
 
-        const scores: PlayerRoundScore[] = cardScores.map((score, i) => ({
+        const scores: PlayerRoundScore[] = effectiveScores.map((score, i) => ({
             playerIndex: i,
             score,
         }));
@@ -251,11 +275,20 @@ export default function ScoreEntryScreen() {
             }),
         );
 
-        const scores = calculateLastChanceRoundScores(
-            playerBreakdowns,
-            ci,
-            colorBonuses,
-        );
+        const scores: PlayerRoundScore[] = session.players.map((_, i) => {
+            const cardScore = effectiveScores[i] ?? 0;
+            const colorBonus = colorBonuses[i] ?? 0;
+            const isCaller = i === ci;
+            const score =
+                outcome === "won"
+                    ? isCaller
+                        ? cardScore + colorBonus
+                        : colorBonus
+                    : isCaller
+                      ? colorBonus
+                      : cardScore;
+            return { playerIndex: i, score };
+        });
 
         const lastChanceData: LastChanceRoundData = {
             callerIndex: ci,
@@ -348,9 +381,11 @@ export default function ScoreEntryScreen() {
                             players={session.players}
                             breakdowns={breakdowns}
                             cardScores={cardScores}
+                            manualScores={manualScores}
                             validationErrors={validationErrors}
                             crossPlayerErrors={crossPlayerErrors}
                             onBreakdownChange={handleBreakdownChange}
+                            onManualScoreChange={handleManualScoreChange}
                             onMermaidInstantWin={handleMermaidInstantWin}
                             submitAttempted={submitAttempted}
                         />
@@ -413,9 +448,11 @@ export default function ScoreEntryScreen() {
                             players={session.players}
                             breakdowns={breakdowns}
                             cardScores={cardScores}
+                            manualScores={manualScores}
                             validationErrors={validationErrors}
                             crossPlayerErrors={crossPlayerErrors}
                             onBreakdownChange={handleBreakdownChange}
+                            onManualScoreChange={handleManualScoreChange}
                             onMermaidInstantWin={handleMermaidInstantWin}
                             submitAttempted={submitAttempted}
                         />
@@ -463,8 +500,8 @@ export default function ScoreEntryScreen() {
                             </Text>
                             <Text style={styles.outcomeExplanation}>
                                 {outcome === "won"
-                                    ? `${session.players[ci]?.name}'s card score (${cardScores[ci]}) is >= all opponents. ${session.players[ci]?.name} gets Card Score + Color Bonus. Opponents get only Color Bonus.`
-                                    : `${session.players[ci]?.name}'s card score (${cardScores[ci]}) is less than at least one opponent. ${session.players[ci]?.name} gets only Color Bonus. Opponents keep their Card Scores.`}
+                                    ? `${session.players[ci]?.name}'s card score (${effectiveScores[ci]}) is >= all opponents. ${session.players[ci]?.name} gets Card Score + Color Bonus. Opponents get only Color Bonus.`
+                                    : `${session.players[ci]?.name}'s card score (${effectiveScores[ci]}) is less than at least one opponent. ${session.players[ci]?.name} gets only Color Bonus. Opponents keep their Card Scores.`}
                             </Text>
                             <PaperButton
                                 title="Enter Color Bonuses"
@@ -510,7 +547,7 @@ export default function ScoreEntryScreen() {
                             )
                             .map(({ player, index }) => {
                                 const keeps = playerKeepsCardScore(index);
-                                const score = cardScores[index] ?? 0;
+                                const score = effectiveScores[index] ?? 0;
                                 const bonus = colorBonuses[index] ?? 0;
                                 return (
                                     <View

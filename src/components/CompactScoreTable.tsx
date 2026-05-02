@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    Pressable,
+    StyleSheet,
+    Modal,
+} from "react-native";
 import { Player, CardBreakdown, MermaidEntry } from "../types";
 import { DECK_MAX } from "../deckLimits";
 import { createEmptyBreakdown } from "../utils";
@@ -17,9 +24,11 @@ interface CompactScoreTableProps {
     players: Player[];
     breakdowns: CardBreakdown[];
     cardScores: number[];
+    manualScores: (number | null)[];
     validationErrors: string[][];
     crossPlayerErrors: string[];
     onBreakdownChange: (playerIndex: number, breakdown: CardBreakdown) => void;
+    onManualScoreChange: (playerIndex: number, value: number | null) => void;
     onMermaidInstantWin: (playerIndex: number) => void;
     submitAttempted: boolean;
 }
@@ -104,6 +113,20 @@ const COLLECTOR_ROWS: RowConfig[] = [
     },
 ];
 
+function hasAnyBreakdownData(bd: CardBreakdown): boolean {
+    return (
+        bd.duoCards.crabs > 0 ||
+        bd.duoCards.boats > 0 ||
+        bd.duoCards.fish > 0 ||
+        bd.duoCards.swimmerSharkCombos > 0 ||
+        bd.collectorCards.shells > 0 ||
+        bd.collectorCards.octopus > 0 ||
+        bd.collectorCards.penguins > 0 ||
+        bd.collectorCards.sailors > 0 ||
+        bd.mermaids.length > 0
+    );
+}
+
 function getRowValues(breakdowns: CardBreakdown[], key: RowKey): number[] {
     return breakdowns.map((bd) => {
         switch (key) {
@@ -171,9 +194,11 @@ export function CompactScoreTable({
     players,
     breakdowns,
     cardScores,
+    manualScores,
     validationErrors,
     crossPlayerErrors,
     onBreakdownChange,
+    onManualScoreChange,
     onMermaidInstantWin,
     submitAttempted,
 }: CompactScoreTableProps) {
@@ -183,6 +208,21 @@ export function CompactScoreTable({
     const [tappedPlayerIndex, setTappedPlayerIndex] = useState<
         number | undefined
     >(undefined);
+    const [manualScoreModal, setManualScoreModal] = useState<{
+        playerIndex: number;
+        inputText: string;
+        hasRowData: boolean;
+    } | null>(null);
+
+    const handleScorePillPress = (playerIndex: number) => {
+        const bd = breakdowns[playerIndex] ?? createEmptyBreakdown();
+        const current = manualScores[playerIndex];
+        setManualScoreModal({
+            playerIndex,
+            inputText: current !== null ? String(current) : "",
+            hasRowData: hasAnyBreakdownData(bd),
+        });
+    };
 
     const openModalForPlayer = (
         modalKey: RowKey | string,
@@ -336,7 +376,11 @@ export function CompactScoreTable({
                             return (
                                 <TouchableOpacity
                                     key={i}
-                                    style={styles.valuePill}
+                                    style={[
+                                        styles.valuePill,
+                                        manualScores[i] !== null &&
+                                            styles.valuePillDimmed,
+                                    ]}
                                     onPress={() =>
                                         openModalForPlayer(config.key, i)
                                     }
@@ -483,7 +527,11 @@ export function CompactScoreTable({
                                     return (
                                         <TouchableOpacity
                                             key={pIdx}
-                                            style={styles.valuePill}
+                                            style={[
+                                                styles.valuePill,
+                                                manualScores[pIdx] !== null &&
+                                                    styles.valuePillDimmed,
+                                            ]}
                                             onPress={() =>
                                                 openModalForPlayer(
                                                     modalKey,
@@ -535,15 +583,257 @@ export function CompactScoreTable({
             <View style={styles.scoreFooter}>
                 <Text style={styles.scoreFooterLabel}>Score</Text>
                 <View style={styles.scoreValues}>
-                    {players.map((player, index) => (
-                        <View key={index} style={styles.scorePill}>
-                            <Text style={styles.scorePillValue}>
-                                {cardScores[index] ?? 0}
-                            </Text>
-                        </View>
-                    ))}
+                    {players.map((player, index) => {
+                        const isManual = manualScores[index] !== null;
+                        const displayScore = isManual
+                            ? manualScores[index]
+                            : (cardScores[index] ?? 0);
+                        return (
+                            <TouchableOpacity
+                                key={index}
+                                style={[
+                                    styles.scorePill,
+                                    isManual && styles.scorePillManual,
+                                ]}
+                                onPress={() => handleScorePillPress(index)}
+                                accessibilityLabel={`Set total score for ${player.name}`}
+                                accessibilityRole="button"
+                            >
+                                <Text style={styles.scorePillValue}>
+                                    {displayScore}
+                                </Text>
+                            </TouchableOpacity>
+                        );
+                    })}
                 </View>
             </View>
+
+            {/* Manual score entry modal */}
+            {manualScoreModal !== null && (
+                <Modal
+                    visible
+                    transparent
+                    animationType="fade"
+                    onRequestClose={() => setManualScoreModal(null)}
+                >
+                    <Pressable
+                        style={styles.manualScoreBackdrop}
+                        onPress={() => setManualScoreModal(null)}
+                        accessibilityLabel="Close modal"
+                        accessibilityRole="button"
+                    >
+                        <Pressable
+                            style={styles.manualScoreCard}
+                            onPress={(e) => e.stopPropagation()}
+                        >
+                            <Text style={styles.manualScoreTitle}>
+                                {players[manualScoreModal.playerIndex]?.name}
+                            </Text>
+
+                            {manualScoreModal.hasRowData &&
+                                manualScores[
+                                    manualScoreModal.playerIndex
+                                ] === null && (
+                                    <View style={styles.manualScoreWarning}>
+                                        <Text
+                                            style={
+                                                styles.manualScoreWarningText
+                                            }
+                                        >
+                                            ⚠ Row entries exist — confirming
+                                            will override the calculated score
+                                            for this player only.
+                                        </Text>
+                                    </View>
+                                )}
+
+                            {/* Score display */}
+                            <View style={styles.manualScoreDisplay}>
+                                <Text style={styles.manualScoreDisplayText}>
+                                    {manualScoreModal.inputText || "0"}
+                                </Text>
+                            </View>
+
+                            {/* Numpad */}
+                            <View style={styles.numpad}>
+                                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+                                    <TouchableOpacity
+                                        key={n}
+                                        style={styles.numpadKey}
+                                        onPress={() =>
+                                            setManualScoreModal((prev) => {
+                                                if (!prev) return prev;
+                                                if (
+                                                    prev.inputText === "0" ||
+                                                    prev.inputText === ""
+                                                )
+                                                    return {
+                                                        ...prev,
+                                                        inputText: String(n),
+                                                    };
+                                                if (prev.inputText.length >= 4)
+                                                    return prev;
+                                                return {
+                                                    ...prev,
+                                                    inputText:
+                                                        prev.inputText +
+                                                        String(n),
+                                                };
+                                            })
+                                        }
+                                        accessibilityLabel={`Press ${n}`}
+                                        accessibilityRole="button"
+                                    >
+                                        <Text style={styles.numpadKeyText}>
+                                            {n}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ))}
+                                <TouchableOpacity
+                                    style={[
+                                        styles.numpadKey,
+                                        styles.numpadKeyAlt,
+                                    ]}
+                                    onPress={() =>
+                                        setManualScoreModal((prev) =>
+                                            prev
+                                                ? { ...prev, inputText: "" }
+                                                : prev,
+                                        )
+                                    }
+                                    accessibilityLabel="Clear"
+                                    accessibilityRole="button"
+                                >
+                                    <Text
+                                        style={[
+                                            styles.numpadKeyText,
+                                            styles.numpadKeyAltText,
+                                        ]}
+                                    >
+                                        C
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles.numpadKey}
+                                    onPress={() =>
+                                        setManualScoreModal((prev) => {
+                                            if (!prev) return prev;
+                                            if (
+                                                prev.inputText === "" ||
+                                                prev.inputText === "0"
+                                            )
+                                                return prev;
+                                            if (prev.inputText.length >= 4)
+                                                return {
+                                                    ...prev,
+                                                    inputText:
+                                                        prev.inputText + "0",
+                                                };
+                                            return {
+                                                ...prev,
+                                                inputText: prev.inputText + "0",
+                                            };
+                                        })
+                                    }
+                                    accessibilityLabel="Press 0"
+                                    accessibilityRole="button"
+                                >
+                                    <Text style={styles.numpadKeyText}>0</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[
+                                        styles.numpadKey,
+                                        styles.numpadKeyAlt,
+                                    ]}
+                                    onPress={() =>
+                                        setManualScoreModal((prev) =>
+                                            prev
+                                                ? {
+                                                      ...prev,
+                                                      inputText:
+                                                          prev.inputText.slice(
+                                                              0,
+                                                              -1,
+                                                          ),
+                                                  }
+                                                : prev,
+                                        )
+                                    }
+                                    accessibilityLabel="Backspace"
+                                    accessibilityRole="button"
+                                >
+                                    <Text
+                                        style={[
+                                            styles.numpadKeyText,
+                                            styles.numpadKeyAltText,
+                                        ]}
+                                    >
+                                        ⌫
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            {/* Action buttons */}
+                            <View style={styles.manualScoreActions}>
+                                <TouchableOpacity
+                                    style={styles.manualScoreCancelBtn}
+                                    onPress={() => setManualScoreModal(null)}
+                                    accessibilityLabel="Cancel"
+                                    accessibilityRole="button"
+                                >
+                                    <Text style={styles.manualScoreCancelText}>
+                                        Cancel
+                                    </Text>
+                                </TouchableOpacity>
+                                {manualScores[
+                                    manualScoreModal.playerIndex
+                                ] !== null && (
+                                    <TouchableOpacity
+                                        style={styles.manualScoreUseRowsBtn}
+                                        onPress={() => {
+                                            onManualScoreChange(
+                                                manualScoreModal.playerIndex,
+                                                null,
+                                            );
+                                            setManualScoreModal(null);
+                                        }}
+                                        accessibilityLabel="Use row entries"
+                                        accessibilityRole="button"
+                                    >
+                                        <Text
+                                            style={styles.manualScoreCancelText}
+                                        >
+                                            Use Rows
+                                        </Text>
+                                    </TouchableOpacity>
+                                )}
+                                <TouchableOpacity
+                                    style={styles.manualScoreConfirmBtn}
+                                    onPress={() => {
+                                        const value = parseInt(
+                                            manualScoreModal.inputText || "0",
+                                            10,
+                                        );
+                                        if (!isNaN(value) && value >= 0) {
+                                            onManualScoreChange(
+                                                manualScoreModal.playerIndex,
+                                                value,
+                                            );
+                                            setManualScoreModal(null);
+                                        }
+                                    }}
+                                    accessibilityLabel="Confirm score"
+                                    accessibilityRole="button"
+                                >
+                                    <Text style={styles.manualScoreConfirmText}>
+                                        Done
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </Pressable>
+                    </Pressable>
+                </Modal>
+            )}
 
             {/* Validation */}
             {showValidation && (
@@ -687,6 +977,9 @@ const styles = StyleSheet.create({
     valuePillNumberDash: {
         color: colors.borderLight,
     },
+    valuePillDimmed: {
+        opacity: 0.3,
+    },
     multiplierBadge: {
         fontSize: 10,
         fontWeight: "700",
@@ -720,11 +1013,148 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingVertical: 4,
         paddingHorizontal: 2,
+        borderRadius: 6,
+    },
+    scorePillManual: {
+        borderBottomWidth: 2,
+        borderBottomColor: colors.border,
     },
     scorePillValue: {
         fontSize: 18,
         fontWeight: "700",
         color: colors.primary,
+    },
+    manualScoreBackdrop: {
+        flex: 1,
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    manualScoreCard: {
+        backgroundColor: colors.surface,
+        borderRadius: 16,
+        padding: spacing.lg,
+        width: "90%",
+        maxWidth: 400,
+        alignItems: "center",
+        shadowColor: "#8B7355",
+        shadowOffset: { width: 2, height: 3 },
+        shadowOpacity: 0.18,
+        shadowRadius: 6,
+        elevation: 4,
+    },
+    manualScoreTitle: {
+        fontSize: 18,
+        fontWeight: "700",
+        color: colors.textPrimary,
+        marginBottom: spacing.md,
+    },
+    manualScoreWarning: {
+        backgroundColor: "#fff3e0",
+        borderWidth: 1,
+        borderColor: "#ff9800",
+        borderRadius: 8,
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        marginBottom: spacing.md,
+        width: "100%",
+        alignItems: "center",
+    },
+    manualScoreWarningText: {
+        fontSize: 12,
+        fontWeight: "600",
+        color: "#e65100",
+        textAlign: "center",
+    },
+    manualScoreDisplay: {
+        width: "100%",
+        backgroundColor: colors.surfaceAlt,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: colors.border,
+        paddingVertical: 12,
+        alignItems: "center",
+        marginBottom: spacing.md,
+    },
+    manualScoreDisplayText: {
+        fontSize: 36,
+        fontWeight: "700",
+        color: colors.primary,
+        letterSpacing: 2,
+    },
+    numpad: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        width: "100%",
+        marginBottom: spacing.md,
+    },
+    numpadKey: {
+        width: "33.333%",
+        padding: 4,
+        alignItems: "center",
+    },
+    numpadKeyAlt: {
+        // intentionally empty — alt keys use numpadKeyAltText for styling
+    },
+    numpadKeyText: {
+        width: "100%",
+        height: 52,
+        borderRadius: 8,
+        backgroundColor: colors.surfaceAlt,
+        fontSize: 22,
+        fontWeight: "500",
+        color: colors.textPrimary,
+        textAlign: "center",
+        textAlignVertical: "center",
+        lineHeight: 52,
+    },
+    numpadKeyAltText: {
+        backgroundColor: colors.borderLight,
+        color: colors.textSecondary,
+        fontWeight: "700",
+    },
+    manualScoreActions: {
+        flexDirection: "row",
+        gap: 12,
+        width: "100%",
+    },
+    manualScoreCancelBtn: {
+        flex: 1,
+        borderRadius: 10,
+        paddingVertical: 12,
+        alignItems: "center",
+        borderWidth: 1.5,
+        borderColor: colors.border,
+    },
+    manualScoreUseRowsBtn: {
+        flex: 1,
+        borderRadius: 10,
+        paddingVertical: 12,
+        alignItems: "center",
+        borderWidth: 1.5,
+        borderColor: colors.border,
+    },
+    manualScoreConfirmBtn: {
+        flex: 1,
+        backgroundColor: colors.primary,
+        borderRadius: 10,
+        paddingVertical: 12,
+        alignItems: "center",
+        shadowColor: "#8B7355",
+        shadowOffset: { width: 2, height: 3 },
+        shadowOpacity: 0.18,
+        shadowRadius: 6,
+        elevation: 4,
+    },
+    manualScoreCancelText: {
+        fontSize: 15,
+        fontWeight: "600",
+        color: colors.primary,
+    },
+    manualScoreConfirmText: {
+        fontSize: 15,
+        fontWeight: "600",
+        color: colors.textOnPrimary,
     },
     validationBox: {
         backgroundColor: "#fdecea",

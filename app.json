@@ -10,13 +10,13 @@
         "splash": {
             "image": "./assets/splash-icon.png",
             "resizeMode": "contain",
-            "backgroundColor": "#ffffff"
+            "backgroundColor": "#DEF1FC"
         },
         "runtimeVersion": {
             "policy": "appVersion"
         },
         "ios": {
-            "supportsTablet": true,
+            "supportsTablet": false,
             "bundleIdentifier": "dev.badpour.seasalt",
             "buildNumber": "1",
             "infoPlist": {
@@ -25,7 +25,7 @@
         },
         "android": {
             "adaptiveIcon": {
-                "backgroundColor": "#E6F4FE",
+                "backgroundColor": "#DEF1FC",
                 "foregroundImage": "./assets/android-icon-foreground.png",
                 "backgroundImage": "./assets/android-icon-background.png",
                 "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -39,7 +39,7 @@
             "bundler": "metro"
         },
         "extra": {
-            "sentryDsn": "",
+            "sentryDsn": "https://50075c52a4b5b3690a6ed14ff69021ef@o4511123259654144.ingest.us.sentry.io/4511123261620224",
             "router": {},
             "eas": {
                 "projectId": "07ba1141-3db8-4885-8884-6c1f6ca622e5"

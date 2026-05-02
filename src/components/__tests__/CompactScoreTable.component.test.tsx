@@ -21,9 +21,11 @@ function renderTable(
             players={players}
             breakdowns={makeBreakdowns(2)}
             cardScores={[0, 0]}
+            manualScores={[null, null]}
             validationErrors={[[], []]}
             crossPlayerErrors={[]}
             onBreakdownChange={jest.fn()}
+            onManualScoreChange={jest.fn()}
             onMermaidInstantWin={jest.fn()}
             submitAttempted={false}
             {...overrides}
