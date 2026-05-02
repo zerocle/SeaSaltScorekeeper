@@ -83,7 +83,7 @@ export function ManualScoreEntryModal({
                     )}
 
                     <View style={styles.display}>
-                        <Text style={styles.displayText}>
+                        <Text style={styles.displayText} testID="score-display">
                             {inputText || "0"}
                         </Text>
                     </View>
