@@ -156,7 +156,8 @@ export default function PlayerSetupScreen() {
                                         styles.inputGroup,
                                         {
                                             zIndex:
-                                                PLAYER_COUNTS.length - index +
+                                                PLAYER_COUNTS.length -
+                                                index +
                                                 1,
                                         },
                                     ]}

@@ -51,9 +51,7 @@ describe("PlayerStatsScreen", () => {
     describe("empty state", () => {
         it("shows empty message when no history", () => {
             const { getByText } = render(<PlayerStatsScreen />);
-            expect(
-                getByText(/No player history yet/),
-            ).toBeTruthy();
+            expect(getByText(/No player history yet/)).toBeTruthy();
         });
 
         it("does not show the table header when empty", () => {
@@ -130,9 +128,7 @@ describe("PlayerStatsScreen", () => {
 
         it("shows — for win rate when player has only abandoned games", () => {
             useGameStore.setState({
-                gameHistory: [
-                    makeRecord(["Alice", "Bob"], null, "abandoned"),
-                ],
+                gameHistory: [makeRecord(["Alice", "Bob"], null, "abandoned")],
             });
             const { getAllByText } = render(<PlayerStatsScreen />);
             expect(getAllByText("—").length).toBe(2);

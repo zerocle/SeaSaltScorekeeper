@@ -10,8 +10,10 @@ import {
 } from "react-native";
 import { colors, foldEffect } from "../theme/theme";
 
-interface PlayerNameInputProps
-    extends Omit<TextInputProps, "value" | "onChangeText" | "style"> {
+interface PlayerNameInputProps extends Omit<
+    TextInputProps,
+    "value" | "onChangeText" | "style"
+> {
     value: string;
     onChangeText: (text: string) => void;
     knownNames: string[];

@@ -19,11 +19,6 @@ function renderInput(
 
 beforeEach(() => {
     jest.clearAllMocks();
-    jest.useFakeTimers();
-});
-
-afterEach(() => {
-    jest.useRealTimers();
 });
 
 describe("PlayerNameInput", () => {
@@ -74,15 +69,20 @@ describe("PlayerNameInput", () => {
         });
 
         it("hides suggestions after blur delay", () => {
-            const { getByTestId, queryByText } = renderInput({ value: "" });
-            fireEvent(getByTestId("player-input"), "focus");
-            expect(queryByText("Alice")).toBeTruthy();
+            jest.useFakeTimers();
+            try {
+                const { getByTestId, queryByText } = renderInput({ value: "" });
+                fireEvent(getByTestId("player-input"), "focus");
+                expect(queryByText("Alice")).toBeTruthy();
 
-            fireEvent(getByTestId("player-input"), "blur");
-            act(() => {
-                jest.advanceTimersByTime(200);
-            });
-            expect(queryByText("Alice")).toBeNull();
+                fireEvent(getByTestId("player-input"), "blur");
+                act(() => {
+                    jest.advanceTimersByTime(200);
+                });
+                expect(queryByText("Alice")).toBeNull();
+            } finally {
+                jest.useRealTimers();
+            }
         });
     });
 

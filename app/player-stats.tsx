@@ -103,9 +103,7 @@ export default function PlayerStatsScreen() {
                                     {item.gamesPlayed}
                                 </Text>
                                 <Text style={styles.cell}>{item.wins}</Text>
-                                <Text style={styles.cell}>
-                                    {winRate(item)}
-                                </Text>
+                                <Text style={styles.cell}>{winRate(item)}</Text>
                             </View>
                         )}
                     />
