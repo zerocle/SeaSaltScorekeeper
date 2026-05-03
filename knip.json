@@ -1,0 +1,13 @@
+{
+    "$schema": "https://unpkg.com/knip@latest/schema.json",
+    "entry": ["app/**/*.{ts,tsx}", "scripts/**/*.js"],
+    "project": ["src/**/*.{ts,tsx}", "app/**/*.{ts,tsx}", "scripts/**/*.js"],
+    "ignoreDependencies": [
+        "expo-status-bar",
+        "expo-updates",
+        "expo-system-ui",
+        "jest-environment-jsdom"
+    ],
+    "ignoreBinaries": ["maestro"],
+    "ignoreExportsUsedInFile": true
+}

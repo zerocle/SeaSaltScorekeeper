@@ -43,7 +43,8 @@ coverage/
 
 # development directories
 .devscreens
-.claude
+.claude/*
+!.claude/settings.json
 screenshots
 .kiro
 .vscode

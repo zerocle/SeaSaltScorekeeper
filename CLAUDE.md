@@ -1,5 +1,20 @@
 # SeaSalt Scorekeeper — Claude Guidelines
 
+## Before starting any new task
+
+Pull main to make sure you are working from the latest code:
+
+```bash
+git fetch origin
+git pull origin main
+```
+
+If you are already on a feature branch, rebase or merge main into it before making changes:
+
+```bash
+git merge origin/main
+```
+
 ## Before every commit and push
 
 Run all three of these steps in order. Do not skip any, even for small changes.
@@ -56,6 +71,29 @@ jest.config.components.js   # Component test config (src/ + app/, jest-expo)
 | `jest.config.components.js` | `src/` + `app/` | `*.component.test.tsx` | `jest-expo` |
 
 The component config uses `jest-expo` with real React Native transforms. The unit config uses the lightweight `__mocks__/react-native.js` mock — if a component uses a React Native primitive that isn't in that mock, add it there.
+
+## Before creating a pull request
+
+Run all of the following checks in order. Every check must pass before opening the PR.
+
+```bash
+# 1. Format
+npm run format
+
+# 2. Type check
+npx tsc --noEmit
+
+# 3. Dead code check
+npm run check:deadcode
+
+# 4. Unit tests with coverage enforcement
+npm run test:coverage
+
+# 5. Component tests
+npm run test:components
+```
+
+If any check fails, fix the issue before creating the PR. Do not open a PR with failing checks.
 
 ## TypeScript
 
