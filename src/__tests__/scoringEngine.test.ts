@@ -341,9 +341,7 @@ describe("calculateLastChanceRoundScores", () => {
     });
 
     it("throws when caller index not found", () => {
-        expect(() =>
-            calculateLastChanceRoundScores([5], 99, [0]),
-        ).toThrow();
+        expect(() => calculateLastChanceRoundScores([5], 99, [0])).toThrow();
     });
 
     it("handles 3 players correctly", () => {

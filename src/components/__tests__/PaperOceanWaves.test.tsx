@@ -95,7 +95,9 @@ describe("PaperOceanWaves", () => {
         expect(json).not.toBeNull();
         expect(json.type).toBe("View");
 
-        const container = (json.children as renderer.ReactTestRendererJSON[])[0];
+        const container = (
+            json.children as renderer.ReactTestRendererJSON[]
+        )[0];
         expect(container.props.testID).toBe("wave-container");
 
         const layers = container.children as renderer.ReactTestRendererJSON[];
@@ -105,14 +107,18 @@ describe("PaperOceanWaves", () => {
         const animatedLayers = layers.slice(0, defaultWaveConfigs.length);
         for (const layer of animatedLayers) {
             expect(layer.type).toBe("Animated.View");
-            const image = (layer.children as renderer.ReactTestRendererJSON[])[0];
+            const image = (
+                layer.children as renderer.ReactTestRendererJSON[]
+            )[0];
             expect(image.type).toBe("Image");
         }
 
         // Last child is the static sand View
         const sandLayer = layers[layers.length - 1];
         expect(sandLayer.type).toBe("View");
-        const sandImage = (sandLayer.children as renderer.ReactTestRendererJSON[])[0];
+        const sandImage = (
+            sandLayer.children as renderer.ReactTestRendererJSON[]
+        )[0];
         expect(sandImage.type).toBe("Image");
     });
 
@@ -130,7 +136,9 @@ describe("PaperOceanWaves", () => {
 
     it("container background is transparent", () => {
         const { json } = renderToJSON();
-        const container = (json.children as renderer.ReactTestRendererJSON[])[0];
+        const container = (
+            json.children as renderer.ReactTestRendererJSON[]
+        )[0];
         const style = Array.isArray(container.props.style)
             ? Object.assign({}, ...container.props.style)
             : container.props.style;

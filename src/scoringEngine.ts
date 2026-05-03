@@ -121,8 +121,12 @@ export function calculateLastChanceRoundScores(
 
         const score =
             outcome === "won"
-                ? isCaller ? cardScore + colorBonus : colorBonus
-                : isCaller ? colorBonus : cardScore;
+                ? isCaller
+                    ? cardScore + colorBonus
+                    : colorBonus
+                : isCaller
+                  ? colorBonus
+                  : cardScore;
 
         return { playerIndex, score };
     });

@@ -24,10 +24,34 @@ export interface WaveLayerConfig {
 }
 
 export const defaultWaveConfigs: WaveLayerConfig[] = [
-    { source: darkBlue,      offsetY: 110, duration: 8000, reverse: false, opacity: 1    },
-    { source: blueWave,      offsetY: 65,  duration: 6500, reverse: true,  opacity: 1    },
-    { source: lightBlue,     offsetY: 28,  duration: 5200, reverse: false, opacity: 0.95 },
-    { source: lightBlueWave, offsetY: 0,   duration: 4000, reverse: true,  opacity: 0.9  },
+    {
+        source: darkBlue,
+        offsetY: 110,
+        duration: 8000,
+        reverse: false,
+        opacity: 1,
+    },
+    {
+        source: blueWave,
+        offsetY: 65,
+        duration: 6500,
+        reverse: true,
+        opacity: 1,
+    },
+    {
+        source: lightBlue,
+        offsetY: 28,
+        duration: 5200,
+        reverse: false,
+        opacity: 0.95,
+    },
+    {
+        source: lightBlueWave,
+        offsetY: 0,
+        duration: 4000,
+        reverse: true,
+        opacity: 0.9,
+    },
 ];
 
 export default function PaperOceanWaves(): React.ReactElement | null {
@@ -114,7 +138,11 @@ export default function PaperOceanWaves(): React.ReactElement | null {
                             source={config.source}
                             style={[
                                 styles.waveImage,
-                                { width: imageWidth, left: imageLeft, height: imageHeight },
+                                {
+                                    width: imageWidth,
+                                    left: imageLeft,
+                                    height: imageHeight,
+                                },
                             ]}
                             resizeMode="stretch"
                         />
@@ -127,7 +155,11 @@ export default function PaperOceanWaves(): React.ReactElement | null {
                         source={sand}
                         style={[
                             styles.waveImage,
-                            { width: imageWidth, left: imageLeft, height: imageHeight },
+                            {
+                                width: imageWidth,
+                                left: imageLeft,
+                                height: imageHeight,
+                            },
                         ]}
                         resizeMode="stretch"
                     />

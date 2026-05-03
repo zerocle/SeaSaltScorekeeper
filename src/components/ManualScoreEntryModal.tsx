@@ -44,8 +44,7 @@ export function ManualScoreEntryModal({
             return prev + "0";
         });
 
-    const pressBackspace = () =>
-        setInputText((prev) => prev.slice(0, -1));
+    const pressBackspace = () => setInputText((prev) => prev.slice(0, -1));
 
     const pressClear = () => setInputText("");
 
