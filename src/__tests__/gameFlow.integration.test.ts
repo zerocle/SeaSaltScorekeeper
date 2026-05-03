@@ -260,7 +260,8 @@ describe("Full game flow: round with card breakdowns", () => {
 
         const session = useGameStore.getState().gameSession!;
         expect(session.rounds[0].breakdowns).toEqual(breakdowns);
-        expect(session.rounds[0].scores[0].score).toBe(3);
-        expect(session.rounds[0].scores[1].score).toBe(3);
+        // crabs=3 → floor(3/2)=1 pair; boats=2 → floor(2/2)=1 pair; crabs=1 → 0 pairs
+        expect(session.rounds[0].scores[0].score).toBe(1);
+        expect(session.rounds[0].scores[1].score).toBe(1);
     });
 });

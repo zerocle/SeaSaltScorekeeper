@@ -116,7 +116,11 @@ export function RoundSummaryModal({ data, onClose }: RoundSummaryModalProps) {
                             {data.players.map((p, i) => (
                                 <ReadOnlyCell
                                     key={i}
-                                    value={String(p.breakdown.duoCards.crabs)}
+                                    value={String(
+                                        Math.floor(
+                                            p.breakdown.duoCards.crabs / 2,
+                                        ),
+                                    )}
                                 />
                             ))}
                         </View>
@@ -127,7 +131,11 @@ export function RoundSummaryModal({ data, onClose }: RoundSummaryModalProps) {
                             {data.players.map((p, i) => (
                                 <ReadOnlyCell
                                     key={i}
-                                    value={String(p.breakdown.duoCards.boats)}
+                                    value={String(
+                                        Math.floor(
+                                            p.breakdown.duoCards.boats / 2,
+                                        ),
+                                    )}
                                     suffix={
                                         p.breakdown.multiplierCards.boat
                                             ? `+${p.breakdown.duoCards.boats}`
@@ -143,7 +151,11 @@ export function RoundSummaryModal({ data, onClose }: RoundSummaryModalProps) {
                             {data.players.map((p, i) => (
                                 <ReadOnlyCell
                                     key={i}
-                                    value={String(p.breakdown.duoCards.fish)}
+                                    value={String(
+                                        Math.floor(
+                                            p.breakdown.duoCards.fish / 2,
+                                        ),
+                                    )}
                                     suffix={
                                         p.breakdown.multiplierCards.fish
                                             ? `+${p.breakdown.duoCards.fish}`

@@ -30,6 +30,8 @@ interface RowEntryModalProps {
     disabledPlayers?: boolean[];
     /** Start on this player's tab when the modal opens */
     initialPlayerIndex?: number;
+    /** Short scoring rule shown between the player tabs and the number grid */
+    scoringHint?: string;
     onConfirm: (values: number[], multiplierPlayerIndex?: number) => void;
     onClose: () => void;
 }
@@ -44,6 +46,7 @@ export function RowEntryModal({
     multiplier,
     disabledPlayers,
     initialPlayerIndex,
+    scoringHint,
     onConfirm,
     onClose,
 }: RowEntryModalProps) {
@@ -191,6 +194,15 @@ export function RowEntryModal({
                             );
                         })}
                     </View>
+
+                    {/* Scoring hint */}
+                    {scoringHint && (
+                        <View style={styles.scoringHintBox}>
+                            <Text style={styles.scoringHintText}>
+                                {scoringHint}
+                            </Text>
+                        </View>
+                    )}
 
                     {/* Number grid for active player */}
                     <Text style={styles.selectLabel}>
@@ -393,6 +405,21 @@ const styles = StyleSheet.create({
     },
     playerTabValueActive: {
         color: colors.textOnPrimary,
+    },
+    scoringHintBox: {
+        width: "100%",
+        backgroundColor: colors.surfaceAlt,
+        borderRadius: 6,
+        paddingVertical: 6,
+        paddingHorizontal: 10,
+        marginBottom: 10,
+        alignItems: "center",
+    },
+    scoringHintText: {
+        fontSize: 12,
+        color: colors.textSecondary,
+        fontWeight: "500",
+        textAlign: "center",
     },
     selectLabel: {
         fontSize: 14,

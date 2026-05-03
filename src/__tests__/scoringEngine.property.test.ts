@@ -91,12 +91,15 @@ describe("Property: Card score equals sum of its components", () => {
 
 // --- Property: Duo points equal sum of duo fields ---
 
-describe("Property: Duo points equal sum of duo fields", () => {
-    it("calculateDuoPoints = crabs + boats + fish + swimmerSharkCombos", () => {
+describe("Property: Duo points score 1 pt per pair for cards, 1 pt per combo for swimmer+shark", () => {
+    it("calculateDuoPoints = floor(crabs/2) + floor(boats/2) + floor(fish/2) + swimmerSharkCombos", () => {
         fc.assert(
             fc.property(arbDuoCards, (duo) => {
                 expect(calculateDuoPoints(duo)).toBe(
-                    duo.crabs + duo.boats + duo.fish + duo.swimmerSharkCombos,
+                    Math.floor(duo.crabs / 2) +
+                        Math.floor(duo.boats / 2) +
+                        Math.floor(duo.fish / 2) +
+                        duo.swimmerSharkCombos,
                 );
             }),
             FC_SETTINGS,

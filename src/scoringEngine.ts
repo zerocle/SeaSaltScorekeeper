@@ -51,9 +51,9 @@ export function calculateCollectorPoints(
 
 export function calculateDuoPoints(breakdown: DuoCards): number {
     return (
-        breakdown.crabs +
-        breakdown.boats +
-        breakdown.fish +
+        Math.floor(breakdown.crabs / 2) +
+        Math.floor(breakdown.boats / 2) +
+        Math.floor(breakdown.fish / 2) +
         breakdown.swimmerSharkCombos
     );
 }

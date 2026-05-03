@@ -149,7 +149,8 @@ describe("calculateDuoPoints", () => {
         ).toBe(0);
     });
 
-    it("sums all duo fields", () => {
+    it("scores 1 pt per pair for crabs/boats/fish, 1 pt per combo for swimmer+shark", () => {
+        // crabs=3→1 pair, boats=2→1 pair, fish=1→0 pairs, swimmerSharkCombos=4→4
         expect(
             calculateDuoPoints({
                 crabs: 3,
@@ -157,7 +158,29 @@ describe("calculateDuoPoints", () => {
                 fish: 1,
                 swimmerSharkCombos: 4,
             }),
-        ).toBe(10);
+        ).toBe(6);
+    });
+
+    it("odd card counts round down", () => {
+        expect(
+            calculateDuoPoints({
+                crabs: 1,
+                boats: 1,
+                fish: 1,
+                swimmerSharkCombos: 0,
+            }),
+        ).toBe(0);
+    });
+
+    it("even card counts score exactly half", () => {
+        expect(
+            calculateDuoPoints({
+                crabs: 4,
+                boats: 6,
+                fish: 2,
+                swimmerSharkCombos: 3,
+            }),
+        ).toBe(2 + 3 + 1 + 3);
     });
 });
 
@@ -288,12 +311,12 @@ describe("calculateCardScore", () => {
             },
             mermaids: [{ colorCount: 4 }],
         };
-        // duo: 2+3+1+0=6
+        // duo: floor(2/2)+floor(3/2)+floor(1/2)+0 = 1+1+0+0 = 2
         // collector: shells(2)=2, octopus(0)=0, penguins(2)=3, sailors(0)=0 → 5
-        // multiplier: boat active → boats=3
+        // multiplier: boat active → boats raw count=3 (bonus is per card)
         // mermaid: 4
-        // total: 6+5+3+4 = 18
-        expect(calculateCardScore(bd)).toBe(18);
+        // total: 2+5+3+4 = 14
+        expect(calculateCardScore(bd)).toBe(14);
     });
 });
 

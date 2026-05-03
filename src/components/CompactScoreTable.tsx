@@ -11,7 +11,7 @@ import {
 } from "../scoringEngine";
 import { RowEntryModal } from "./RowEntryModal";
 import { ManualScoreEntryModal } from "./ManualScoreEntryModal";
-import { colors, spacing } from "../theme/theme";
+import { colors } from "../theme/theme";
 import { CrabIcon, ShellIcon, MermaidIcon } from "../theme/icons";
 
 interface CompactScoreTableProps {
@@ -43,6 +43,7 @@ interface RowConfig {
     label: string;
     maxValue: number;
     hasDeckLimit: boolean;
+    scoringHint?: string;
     multiplier?: {
         field: keyof CardBreakdown["multiplierCards"];
         label: string;
@@ -55,12 +56,14 @@ const DUO_ROWS: RowConfig[] = [
         label: "Crabs",
         maxValue: DECK_MAX.crabs,
         hasDeckLimit: true,
+        scoringHint: "1 pt per pair",
     },
     {
         key: "boats",
         label: "Boats",
         maxValue: DECK_MAX.boats,
         hasDeckLimit: true,
+        scoringHint: "1 pt per pair  ·  bonus card adds +1 per card",
         multiplier: { field: "boat", label: "+1/ea" },
     },
     {
@@ -68,6 +71,7 @@ const DUO_ROWS: RowConfig[] = [
         label: "Fish",
         maxValue: DECK_MAX.fish,
         hasDeckLimit: true,
+        scoringHint: "1 pt per pair  ·  bonus card adds +1 per card",
         multiplier: { field: "fish", label: "+1/ea" },
     },
     {
@@ -75,6 +79,7 @@ const DUO_ROWS: RowConfig[] = [
         label: "Swim+Shark",
         maxValue: DECK_MAX.swimmerSharkCombos,
         hasDeckLimit: true,
+        scoringHint: "1 pt per combo (1 swimmer + 1 shark)",
     },
 ];
 
@@ -84,18 +89,21 @@ const COLLECTOR_ROWS: RowConfig[] = [
         label: "Shells",
         maxValue: DECK_MAX.shells,
         hasDeckLimit: true,
+        scoringHint: "0 2 4 6 8 10 pts",
     },
     {
         key: "octopus",
         label: "Octopus",
         maxValue: DECK_MAX.octopus,
         hasDeckLimit: true,
+        scoringHint: "0 3 6 9 12 pts",
     },
     {
         key: "penguins",
         label: "Penguins",
         maxValue: DECK_MAX.penguins,
         hasDeckLimit: true,
+        scoringHint: "1 3 5 pts",
         multiplier: { field: "penguin", label: "+2/ea" },
     },
     {
@@ -103,6 +111,7 @@ const COLLECTOR_ROWS: RowConfig[] = [
         label: "Sailors",
         maxValue: DECK_MAX.sailors,
         hasDeckLimit: true,
+        scoringHint: "0 5 pts",
         multiplier: { field: "sailor", label: "+3/ea" },
     },
 ];
@@ -150,15 +159,15 @@ function getRowValues(breakdowns: CardBreakdown[], key: RowKey): number[] {
 function getRowScore(bd: CardBreakdown, key: RowKey): number {
     switch (key) {
         case "crabs":
-            return bd.duoCards.crabs;
+            return Math.floor(bd.duoCards.crabs / 2);
         case "boats":
             return (
-                bd.duoCards.boats +
+                Math.floor(bd.duoCards.boats / 2) +
                 (bd.multiplierCards.boat ? bd.duoCards.boats : 0)
             );
         case "fish":
             return (
-                bd.duoCards.fish +
+                Math.floor(bd.duoCards.fish / 2) +
                 (bd.multiplierCards.fish ? bd.duoCards.fish : 0)
             );
         case "swimmerSharkCombos":
@@ -414,6 +423,7 @@ export function CompactScoreTable({
                     maxValue={config.maxValue}
                     deckMax={config.hasDeckLimit ? config.maxValue : undefined}
                     initialPlayerIndex={tappedPlayerIndex}
+                    scoringHint={config.scoringHint}
                     multiplier={
                         config.multiplier
                             ? {
@@ -481,6 +491,7 @@ export function CompactScoreTable({
                 label: "Mermaid Count",
                 maxValue: DECK_MAX.mermaidCount,
                 hasDeckLimit: true,
+                scoringHint: "each mermaid scores 1 pt per unique color match",
             })}
 
             {/* Mermaid color rows — same modal pattern as other rows */}
@@ -556,6 +567,7 @@ export function CompactScoreTable({
                             currentValues={values}
                             maxValue={DECK_MAX.mermaidColorCount}
                             initialPlayerIndex={tappedPlayerIndex}
+                            scoringHint="1 pt per unique color match"
                             disabledPlayers={players.map(
                                 (_, pIdx) =>
                                     mIdx >=

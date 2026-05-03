@@ -65,24 +65,23 @@ describe("CompactScoreTable", () => {
 
     // 4. Each row shows per-player score values (uses getRowScore, not raw card counts)
     describe("displays per-player row scores (getRowScore)", () => {
-        it("shows duo card score equal to card count for crabs", () => {
+        it("shows pair-based score for crabs (1 pt per pair)", () => {
             const breakdowns = makeBreakdowns(2);
-            breakdowns[0].duoCards.crabs = 5;
-            breakdowns[1].duoCards.crabs = 3;
+            breakdowns[0].duoCards.crabs = 6; // 3 pairs = 3 pts
+            breakdowns[1].duoCards.crabs = 4; // 2 pairs = 2 pts
             const { getAllByText } = renderTable({ breakdowns });
-            // crabs score = count (no multiplier)
-            expect(getAllByText("5").length).toBeGreaterThanOrEqual(1);
             expect(getAllByText("3").length).toBeGreaterThanOrEqual(1);
+            expect(getAllByText("2").length).toBeGreaterThanOrEqual(1);
         });
 
-        it("shows doubled boat score when multiplier is active", () => {
+        it("shows pair score plus bonus-card points for boats when multiplier is active", () => {
             const breakdowns = makeBreakdowns(2);
-            breakdowns[0].duoCards.boats = 4;
+            breakdowns[0].duoCards.boats = 4; // floor(4/2)=2 pairs + 4 bonus = 6
             breakdowns[0].multiplierCards.boat = true;
-            breakdowns[1].duoCards.boats = 2;
-            // Alice boats score = 4 + 4 = 8, Bob boats score = 2
+            breakdowns[1].duoCards.boats = 4; // floor(4/2)=2 pairs, no bonus = 2
+            // Alice boats score = 2 + 4 = 6, Bob boats score = 2
             const { getAllByText } = renderTable({ breakdowns });
-            expect(getAllByText("8").length).toBeGreaterThanOrEqual(1);
+            expect(getAllByText("6").length).toBeGreaterThanOrEqual(1);
             expect(getAllByText("2").length).toBeGreaterThanOrEqual(1);
         });
 
