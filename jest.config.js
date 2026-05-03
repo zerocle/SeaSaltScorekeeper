@@ -7,6 +7,22 @@ module.exports = {
     globals: {
         __DEV__: true,
     },
+    collectCoverageFrom: [
+        "src/**/*.{ts,tsx}",
+        "!src/**/__tests__/**",
+        "!src/**/__mocks__/**",
+        "!src/components/ScoreTable.tsx",
+        "!src/utils/sentry.ts",
+        "!src/theme/icons/index.ts",
+    ],
+    coverageThreshold: {
+        global: {
+            statements: 88,
+            branches: 86,
+            functions: 82,
+            lines: 88,
+        },
+    },
     coveragePathIgnorePatterns: [
         "/node_modules/",
         "src/components/ScoreTable.tsx",

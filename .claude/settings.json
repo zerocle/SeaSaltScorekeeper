@@ -1,0 +1,18 @@
+{
+    "hooks": {
+        "PreToolUse": [
+            {
+                "matcher": "Bash",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "if": "Bash(gh pr create*)",
+                        "shell": "bash",
+                        "command": "echo '{\"continue\":false,\"stopReason\":\"Pre-PR checks required. Run in order: 1) npm run format  2) npx tsc --noEmit  3) npm run check:deadcode  4) npm run test:coverage  5) npm run test:components — all must pass before opening the PR.\"}'",
+                        "statusMessage": "Checking pre-PR requirements..."
+                    }
+                ]
+            }
+        ]
+    }
+}
