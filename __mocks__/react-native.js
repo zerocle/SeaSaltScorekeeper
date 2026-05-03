@@ -17,6 +17,7 @@ module.exports = {
     View: createMockComponent("View"),
     Image: createMockComponent("Image"),
     Text: createMockComponent("Text"),
+    TextInput: createMockComponent("TextInput"),
     TouchableOpacity: createMockComponent("TouchableOpacity"),
     Pressable: createMockComponent("Pressable"),
     Modal: MockModal,
