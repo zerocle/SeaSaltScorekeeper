@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
     View,
     Text,
-    TextInput,
     StyleSheet,
     ScrollView,
     KeyboardAvoidingView,
@@ -11,13 +10,24 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useGameStore } from "../src/store/gameStore";
-import { PlayerInput } from "../src/types";
+import { PlayerInput, GameRecord } from "../src/types";
 import { colors, typography, foldEffectElevated } from "../src/theme/theme";
 import PaperButton from "../src/theme/PaperButton";
+import PlayerNameInput from "../src/components/PlayerNameInput";
 import {
     sanitizePlayerName,
     validatePlayerNames,
 } from "../src/validation/playerNameValidator";
+
+function getKnownPlayerNames(gameHistory: GameRecord[]): string[] {
+    const names = new Set<string>();
+    for (const record of gameHistory) {
+        for (const player of record.session.players) {
+            names.add(player.name);
+        }
+    }
+    return Array.from(names).sort((a, b) => a.localeCompare(b));
+}
 
 const PLAYER_COUNTS = [2, 3, 4] as const;
 
@@ -25,6 +35,11 @@ export default function PlayerSetupScreen() {
     const router = useRouter();
     const createGame = useGameStore((s) => s.createGame);
     const gameHistory = useGameStore((s) => s.gameHistory);
+
+    const knownNames = useMemo(
+        () => getKnownPlayerNames(gameHistory),
+        [gameHistory],
+    );
 
     const lastGame =
         gameHistory.length > 0 ? gameHistory[gameHistory.length - 1] : null;
@@ -135,28 +150,33 @@ export default function PlayerSetupScreen() {
                                 Player Names
                             </Text>
                             {names.map((name, index) => (
-                                <View key={index} style={styles.inputGroup}>
-                                    <TextInput
-                                        style={[
-                                            styles.input,
-                                            visibleErrors[index]
-                                                ? styles.inputError
-                                                : undefined,
-                                        ]}
-                                        placeholder={`Player ${index + 1}`}
-                                        placeholderTextColor="#999"
+                                <View
+                                    key={index}
+                                    style={[
+                                        styles.inputGroup,
+                                        {
+                                            zIndex:
+                                                PLAYER_COUNTS.length - index +
+                                                1,
+                                        },
+                                    ]}
+                                >
+                                    <PlayerNameInput
                                         value={name}
                                         onChangeText={(text) =>
                                             handleNameChange(index, text)
                                         }
+                                        knownNames={knownNames}
+                                        excludeNames={names.filter(
+                                            (_, i) => i !== index,
+                                        )}
+                                        error={visibleErrors[index]}
+                                        showError={!!visibleErrors[index]}
+                                        placeholder={`Player ${index + 1}`}
+                                        placeholderTextColor="#999"
                                         accessibilityLabel={`Player ${index + 1} name`}
                                         autoCapitalize="words"
                                     />
-                                    {visibleErrors[index] ? (
-                                        <Text style={styles.errorText}>
-                                            {visibleErrors[index]}
-                                        </Text>
-                                    ) : null}
                                 </View>
                             ))}
 
@@ -174,6 +194,16 @@ export default function PlayerSetupScreen() {
                                         onPress={() => router.push("/history")}
                                         variant="outline"
                                         accessibilityLabel="Game History"
+                                    />
+                                </View>
+                                <View style={styles.historyButtonSpacer}>
+                                    <PaperButton
+                                        title="Player Stats"
+                                        onPress={() =>
+                                            router.push("/player-stats")
+                                        }
+                                        variant="outline"
+                                        accessibilityLabel="Player Stats"
                                     />
                                 </View>
                                 <View style={styles.historyButtonSpacer}>
@@ -246,29 +276,9 @@ const styles = StyleSheet.create({
     toggleButtonWrapper: {
         minWidth: 56,
     },
-    input: {
-        width: "100%",
-        height: 48,
-        borderWidth: 1,
-        borderColor: colors.border,
-        borderRadius: 10,
-        paddingHorizontal: 16,
-        fontSize: 16,
-        backgroundColor: colors.background,
-        color: colors.textPrimary,
-    },
-    inputError: {
-        borderColor: colors.error,
-    },
     inputGroup: {
         width: "100%",
         marginBottom: 12,
-    },
-    errorText: {
-        color: colors.error,
-        fontSize: 12,
-        marginTop: 4,
-        marginLeft: 4,
     },
     startButtonWrapper: {
         marginTop: 16,
