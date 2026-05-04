@@ -1,6 +1,5 @@
 module.exports = {
     preset: "jest-expo",
-    testEnvironment: "jsdom",
     roots: ["<rootDir>/src", "<rootDir>/app"],
     testMatch: ["**/__tests__/**/*.component.test.tsx"],
     moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],

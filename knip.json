@@ -6,7 +6,6 @@
         "expo-status-bar",
         "expo-updates",
         "expo-system-ui",
-        "jest-environment-jsdom"
     ],
     "ignoreBinaries": ["maestro"],
     "ignoreExportsUsedInFile": true
