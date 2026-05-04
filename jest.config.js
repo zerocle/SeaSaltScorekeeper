@@ -6,6 +6,7 @@ module.exports = {
     moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
     globals: {
         __DEV__: true,
+        IS_REACT_NATIVE_TEST_ENVIRONMENT: true,
     },
     collectCoverageFrom: [
         "src/**/*.{ts,tsx}",

@@ -34,28 +34,6 @@ function ThrowingChild() {
     return <Text>Child rendered</Text>;
 }
 
-// Suppress console.error for expected error boundary logs
-const originalConsoleError = console.error;
-beforeAll(() => {
-    console.error = (...args: unknown[]) => {
-        const msg = String(args[0]);
-        if (
-            msg.includes("Error: Uncaught") ||
-            msg.includes("The above error occurred") ||
-            msg.includes("Test error") ||
-            msg.includes("componentDidCatch") ||
-            msg.includes("concurrent rendering") ||
-            msg.includes("React will try to recreate")
-        ) {
-            return;
-        }
-        originalConsoleError(...args);
-    };
-});
-afterAll(() => {
-    console.error = originalConsoleError;
-});
-
 beforeEach(() => {
     jest.clearAllMocks();
     shouldThrow = false;
