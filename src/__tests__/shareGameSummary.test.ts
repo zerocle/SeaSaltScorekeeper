@@ -1,4 +1,5 @@
-import { formatGameSummary } from "../shareGameSummary";
+import { Share } from "react-native";
+import { formatGameSummary, shareGameSummary } from "../shareGameSummary";
 import type { GameSession } from "../types";
 
 function makeSession(overrides: Partial<GameSession> = {}): GameSession {
@@ -181,5 +182,27 @@ describe("formatGameSummary", () => {
         const result = formatGameSummary(session, "abandoned");
         expect(result).toContain("Sea Salt & Paper — Game Summary");
         expect(result).not.toContain("Round");
+    });
+});
+
+describe("shareGameSummary", () => {
+    const mockShareFn = Share.share as jest.Mock;
+
+    beforeEach(() => {
+        mockShareFn.mockClear();
+    });
+
+    it("calls Share.share with the formatted message", async () => {
+        await shareGameSummary(makeSession());
+        expect(mockShareFn).toHaveBeenCalledTimes(1);
+        const [{ message }] = mockShareFn.mock.calls[0];
+        expect(message).toContain("Sea Salt & Paper — Game Summary");
+        expect(message).toContain("Alice");
+    });
+
+    it("passes the correct status to the formatter for abandoned games", async () => {
+        await shareGameSummary(makeSession(), "abandoned");
+        const [{ message }] = mockShareFn.mock.calls[0];
+        expect(message).toContain("abandoned");
     });
 });
