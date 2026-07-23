@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { shareGameSummary } from "../src/shareGameSummary";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useGameStore } from "../src/store/gameStore";
@@ -211,6 +212,14 @@ export default function HistoryDetailScreen() {
             </ScrollView>
 
             <View style={styles.buttonContainer}>
+                <PaperButton
+                    title="Share Results"
+                    onPress={() =>
+                        shareGameSummary(record.session, record.status)
+                    }
+                    variant="primary"
+                    accessibilityLabel="Share Results"
+                />
                 <PaperButton
                     title="Back"
                     onPress={() => router.back()}

@@ -278,6 +278,34 @@ describe("GameHistoryItem interactions", () => {
         ).toBeTruthy();
     });
 
+    it("pressing the row navigates to the history detail screen", () => {
+        const { getByLabelText } = render(
+            <GameHistoryItem record={completedRecord} onDelete={jest.fn()} />,
+        );
+        const gameDate = new Date(
+            completedRecord.completedAt,
+        ).toLocaleDateString();
+        fireEvent.press(getByLabelText(`View game from ${gameDate}`));
+        expect(mockPush).toHaveBeenCalledWith(
+            `/history-detail?id=${completedRecord.id}`,
+        );
+    });
+
+    it("confirming delete from dialog calls onDelete and hides dialog", () => {
+        const onDelete = jest.fn();
+        const { getByLabelText, queryByText } = render(
+            <GameHistoryItem record={completedRecord} onDelete={onDelete} />,
+        );
+
+        fireEvent(getByLabelText("Delete game"), "press", {
+            stopPropagation: jest.fn(),
+        });
+        fireEvent.press(getByLabelText("Delete Game"));
+
+        expect(onDelete).toHaveBeenCalledTimes(1);
+        expect(queryByText("Delete Game")).toBeNull();
+    });
+
     it("displays abandoned badge for abandoned game status", () => {
         const { getByText, queryByText } = render(
             <GameHistoryItem record={abandonedRecord} onDelete={jest.fn()} />,

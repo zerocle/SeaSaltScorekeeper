@@ -53,6 +53,9 @@ module.exports = {
     Alert: {
         alert: jest.fn(),
     },
+    Share: {
+        share: jest.fn().mockResolvedValue({ action: "sharedAction" }),
+    },
     Platform: {
         OS: "ios",
         select: (obj) => obj.ios ?? obj.default,

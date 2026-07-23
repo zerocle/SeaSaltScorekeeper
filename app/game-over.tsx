@@ -6,6 +6,7 @@ import {
     StyleSheet,
     ScrollView,
 } from "react-native";
+import { shareGameSummary } from "../src/shareGameSummary";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useGameStore } from "../src/store/gameStore";
@@ -68,6 +69,10 @@ export default function GameOverScreen() {
 
     const handleViewScoreboard = () => {
         router.push("/scoreboard");
+    };
+
+    const handleShare = () => {
+        shareGameSummary(session);
     };
 
     return (
@@ -203,6 +208,14 @@ export default function GameOverScreen() {
                                 variant="primary"
                                 accessibilityLabel="View Scoreboard"
                             />
+                            {winner && (
+                                <PaperButton
+                                    title="Share Results"
+                                    onPress={handleShare}
+                                    variant="outline"
+                                    accessibilityLabel="Share Results"
+                                />
+                            )}
                             <PaperButton
                                 title="New Game"
                                 onPress={handleNewGame}
